@@ -18,16 +18,24 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
       String name = result.files.single.name;
       String path = result.files.single.path!;
 
-      String category = "others";
+      String category = "Others";
+
       String lowerName = name.toLowerCase();
-      if (lowerName.contains("upi")||
-          lowerName.contains("pay")||
-          lowerName.contains("reciept")){
+      if (lowerName.contains("screenshot") || lowerName.contains("img")) {
+        category = "Screenshots";
+      }
+      if (lowerName.contains("upi") ||
+          lowerName.contains("pay") ||
+          lowerName.contains("receipt")) {
         category = "Payments";
-      } else if (lowerName.contains("Amazon")||
-      lowerName.contains("orders")){
+      }
+      else if (lowerName.contains("amazon") ||
+          lowerName.contains("order") ||
+          lowerName.contains("flipkart")) {
         category = "Orders";
-      } else if (lowerName.contains("Certificates")){
+      }
+      else if (lowerName.contains("certificate") ||
+          lowerName.contains("result")) {
         category = "Academic";
       }
       Navigator.pop(context, {

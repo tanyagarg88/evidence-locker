@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'add_document_screen.dart';
+import 'package:hive/hive.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +12,22 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, String>> documents = [];
   String searchQuery = "";
+
+  @override
+  void initState() {
+    super.initState();
+    loadDocuments();
+  }
+
+  void loadDocuments() {
+    final box = Hive.box('documentsBox');
+
+    setState(() {
+      documents = box.values
+          .map((e) => Map<String, String>.from(e))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +145,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon = Icons.school;
                       iconColor = Colors.blue;
                       break;
+                    case "Screenshots":
+                      icon = Icons.image;
+                      iconColor = Colors.purple;
+                      break;
                     default:
                       icon = Icons.insert_drive_file;
                       iconColor = Colors.grey;
@@ -234,6 +255,8 @@ class _HomeScreenState extends State<HomeScreen> {
             if (result != null) {
               setState(() {
                 documents.add(result);
+                final box = Hive.box('documentsBox');
+                box.add(result);
               });
             }
           },
