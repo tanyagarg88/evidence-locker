@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'add_document_screen.dart';
 import 'package:hive/hive.dart';
+import 'add_document_screen.dart';
+import 'folder_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,7 +12,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, String>> documents = [];
-  String searchQuery = "";
 
   @override
   void initState() {
@@ -31,16 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    final filteredDocs = documents.where((doc) {
-      return doc["name"]!
-          .toLowerCase()
-          .contains(searchQuery.toLowerCase());
-    }).toList();
-
     return Scaffold(
+      backgroundColor: const Color(0xFFF5EDE4),
+
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EDE4),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text(
           "Evidence Locker",
@@ -73,194 +68,102 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 6),
 
             const Text(
-              "Your personal digital vault",
+              "Secure. Smart. Organized.",
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.black54,
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 30),
 
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Search documents...",
-                prefixIcon: const Icon(Icons.search, color: Color(0xFF6F4E37)),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(18),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
-              },
-            ),
-
-            const SizedBox(height: 20),
+            // 📂 FOLDER GRID
             Expanded(
-              child: filteredDocs.isEmpty
-                  ? Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: const Center(
-                  child: Text(
-                    "No documents found",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              )
-                  : ListView.builder(
-                itemCount: filteredDocs.length,
-                itemBuilder: (context, index) {
-                  final doc = filteredDocs[index];
-
-                  IconData icon;
-                  Color iconColor;
-
-                  switch (doc["category"]) {
-                    case "Payments":
-                      icon = Icons.payment;
-                      iconColor = Colors.green;
-                      break;
-                    case "Orders":
-                      icon = Icons.shopping_bag;
-                      iconColor = Colors.orange;
-                      break;
-                    case "Academic":
-                      icon = Icons.school;
-                      iconColor = Colors.blue;
-                      break;
-                    case "Screenshots":
-                      icon = Icons.image;
-                      iconColor = Colors.purple;
-                      break;
-                    default:
-                      icon = Icons.insert_drive_file;
-                      iconColor = Colors.grey;
-                  }
-
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.brown.withOpacity(0.1),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: iconColor.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Icon(icon, color: iconColor, size: 22),
-                        ),
-
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                doc["name"] ?? "",
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15,
-                                  color: Color(0xFF2E2E2E),
-                                ),
-                              ),
-
-                              const SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  Text(
-                                    doc["category"] ?? "Others",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: iconColor,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-
-                                  const Spacer(),
-                                  Text(
-                                    "Saved",
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.grey[500],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 15,
+                children: [
+                  buildFolderCard("Payments", Icons.payment, Colors.green),
+                  buildFolderCard("Screenshots", Icons.image, Colors.purple),
+                  buildFolderCard("Images", Icons.photo, Colors.teal),
+                  buildFolderCard("Academic", Icons.school, Colors.blue),
+                  buildFolderCard("Bills", Icons.receipt_long, Colors.redAccent),
+                  buildFolderCard("Others", Icons.folder, Colors.grey),
+                ],
               ),
             ),
           ],
         ),
       ),
 
-      floatingActionButton: Container(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF6F4E37),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddDocumentScreen(),
+            ),
+          );
+
+          if (result != null) {
+            final box = Hive.box('documentsBox');
+
+            setState(() {
+              documents.add(result);
+              box.add(result);
+            });
+          }
+        },
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+
+  // 📂 Folder Card UI
+  Widget buildFolderCard(String title, IconData icon, Color color) {
+    return GestureDetector(
+      onTap: () {
+        final filtered = documents.where((doc) {
+          return doc["category"] == title;
+        }).toList();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FolderScreen(
+              title: title,
+              documents: filtered,
+            ),
+          ),
+        );
+      },
+      child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
             BoxShadow(
-              color: Colors.black26,
+              color: Colors.brown.withOpacity(0.1),
               blurRadius: 10,
-              offset: Offset(0, 4),
             ),
           ],
         ),
-        child: FloatingActionButton(
-          backgroundColor: const Color(0xFF6F4E37),
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AddDocumentScreen(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: color),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: Color(0xFF2E2E2E),
               ),
-            );
-
-            if (result != null) {
-              setState(() {
-                documents.add(result);
-                final box = Hive.box('documentsBox');
-                box.add(result);
-              });
-            }
-          },
-          child: const Icon(Icons.add, color: Colors.white),
+            ),
+          ],
         ),
       ),
     );
