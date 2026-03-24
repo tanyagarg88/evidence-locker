@@ -129,6 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   buildFolderCard("Images", Icons.photo, Colors.teal),
                   buildFolderCard("Academic", Icons.school, Colors.blue),
                   buildFolderCard("Bills", Icons.receipt_long, Colors.redAccent),
+                  buildFolderCard("IDs", Icons.badge, Colors.indigo),
+                  buildFolderCard("Tickets", Icons.confirmation_number, Colors.pink),
                   buildFolderCard("Others", Icons.folder, Colors.grey),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:open_file/open_file.dart';
 
 class FolderScreen extends StatefulWidget {
   final String title;
@@ -102,9 +103,13 @@ class _FolderScreenState extends State<FolderScreen> {
             },
 
             child: ListTile(
+              onTap: () {
+                OpenFile.open(doc["path"]!);
+              },
+              leading: const Icon(Icons.insert_drive_file),
               title: Text(doc["name"]!),
               subtitle: Text(doc["category"]!),
-            ),
+            )
           );
         },
       ),

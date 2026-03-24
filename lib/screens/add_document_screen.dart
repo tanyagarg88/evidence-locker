@@ -31,7 +31,8 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
       }
       else if (lowerName.contains("upi") ||
           lowerName.contains("pay") ||
-          lowerName.contains("receipt")) {
+          lowerName.contains("receipt")||
+          lowerName.contains("Gpay")){
         category = "Payments";
       }
       else if (lowerName.contains("bill") ||
@@ -41,6 +42,15 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
       else if (lowerName.contains("certificate") ||
           lowerName.contains("result")) {
         category = "Academic";
+      }
+      else if (lowerName.contains("aadhaar") ||
+          lowerName.contains("pan") ||
+          lowerName.contains("id")) {
+        category = "IDs";
+      }
+      else if (lowerName.contains("ticket") ||
+          lowerName.contains("booking")) {
+        category = "Tickets";
       }
       Navigator.pop(context, {
         "name": name,
