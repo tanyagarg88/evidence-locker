@@ -11,6 +11,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String searchQuery = "";
   List<Map<String, String>> documents = [];
 
   @override
@@ -56,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 20),
 
+
             const Text(
               "Welcome back, Tanya 👋",
               style: TextStyle(
@@ -76,10 +78,48 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             const SizedBox(height: 30),
+            TextField(
+              decoration: InputDecoration(
+                hintText: "Search documents...",
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value;
+                });
+              },
+            ),
 
-            // 📂 FOLDER GRID
+            const SizedBox(height: 20),
+
             Expanded(
-              child: GridView.count(
+              child: searchQuery.isNotEmpty
+                  ? ListView.builder(
+                itemCount: documents.length,
+                itemBuilder: (context, index) {
+                  final doc = documents[index];
+
+                  final name = doc["name"]!.toLowerCase();
+                  final category = doc["category"]!.toLowerCase();
+                  final query = searchQuery.toLowerCase();
+
+                  if (!(name.contains(query) || category.contains(query))) {
+                    return const SizedBox();
+                  }
+
+                  return ListTile(
+                    title: Text(doc["name"]!),
+                    subtitle: Text(doc["category"]!),
+                  );
+                }, // ✅ THIS COMMA IS IMPORTANT
+              )
+                  : GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 15,
@@ -92,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   buildFolderCard("Others", Icons.folder, Colors.grey),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -121,7 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // 📂 Folder Card UI
   Widget buildFolderCard(String title, IconData icon, Color color) {
     return GestureDetector(
       onTap: () {
@@ -135,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context) => FolderScreen(
               title: title,
               documents: filtered,
+              searchQuery: searchQuery,
             ),
           ),
         );
