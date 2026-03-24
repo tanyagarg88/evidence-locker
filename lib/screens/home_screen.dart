@@ -146,6 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context) => const AddDocumentScreen(),
             ),
           );
+          loadDocuments();
 
           if (result != null) {
             final box = Hive.box('documentsBox');
@@ -173,8 +174,6 @@ class _HomeScreenState extends State<HomeScreen> {
           MaterialPageRoute(
             builder: (context) => FolderScreen(
               title: title,
-              documents: filtered,
-              searchQuery: searchQuery,
             ),
           ),
         );
