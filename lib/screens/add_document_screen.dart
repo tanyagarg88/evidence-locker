@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
 class AddDocumentScreen extends StatefulWidget {
   const AddDocumentScreen({super.key});
@@ -9,7 +10,18 @@ class AddDocumentScreen extends StatefulWidget {
 }
 
 class _AddDocumentScreenState extends State<AddDocumentScreen> {
-  String? fileName;
+
+  Future<String> extractText(String path) async {
+    final textRecognizer = TextRecognizer();
+    final inputImage = InputImage.fromFilePath(path);
+
+    final RecognizedText recognizedText =
+    await textRecognizer.processImage(inputImage);
+
+    await textRecognizer.close();
+
+    return recognizedText.text;
+  }
 
   Future<void> pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -17,9 +29,13 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
     if (result != null) {
       String name = result.files.single.name;
       String path = result.files.single.path!;
+      String extractedText = await extractText(path);
+      print("Extracted Text: $extractedText");
+
+      String text = extractedText.toLowerCase();
+      String lowerName = name.toLowerCase();
 
       String category = "Others";
-      String lowerName = name.toLowerCase();
       if (lowerName.contains("screenshot")) {
         category = "Screenshots";
       }
@@ -29,18 +45,18 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
           lowerName.endsWith(".png")) {
         category = "Images";
       }
-      else if (lowerName.contains("upi") ||
-          lowerName.contains("pay") ||
-          lowerName.contains("receipt")||
-          lowerName.contains("Gpay")){
+      else if (text.contains("upi") ||
+          text.contains("paid") ||
+          text.contains("₹") ||
+          lowerName.contains("receipt")) {
         category = "Payments";
       }
-      else if (lowerName.contains("bill") ||
-          lowerName.contains("invoice")) {
+      else if (text.contains("invoice") ||
+          text.contains("bill")) {
         category = "Bills";
       }
-      else if (lowerName.contains("certificate") ||
-          lowerName.contains("result")) {
+      else if (text.contains("certificate") ||
+          text.contains("result")) {
         category = "Academic";
       }
       else if (lowerName.contains("aadhaar") ||
@@ -48,8 +64,8 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
           lowerName.contains("id")) {
         category = "IDs";
       }
-      else if (lowerName.contains("ticket") ||
-          lowerName.contains("booking")) {
+      else if (text.contains("ticket") ||
+          text.contains("booking")) {
         category = "Tickets";
       }
       Navigator.pop(context, {
