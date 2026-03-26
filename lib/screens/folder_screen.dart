@@ -3,7 +3,8 @@ import 'package:hive/hive.dart';
 import 'package:open_file/open_file.dart';
 import 'image_preview_screen.dart';
 
-class FolderScreen extends StatefulWidget {
+class
+FolderScreen extends StatefulWidget {
   final String title;
 
   const FolderScreen({
