@@ -21,25 +21,41 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
     if (image != null) {
       String path = image.path;
       String name = path.split('/').last;
-
       String extractedText = await extractText(path);
-      print("OCR: $extractedText");
+      print("OCR TEXT: $extractedText");
 
       String text = extractedText.toLowerCase();
       String category = "Others";
-
-      if (text.contains("upi") || text.contains("₹")) {
+      if (text.contains("upi") ||
+          text.contains("₹") ||
+          text.contains("paid") ||
+          text.contains("amount")) {
         category = "Payments";
-      } else if (text.contains("bill")) {
-        category = "Bills";
-      } else if (text.contains("certificate")) {
+      }
+      else if (text.contains("certificate") ||
+          text.contains("course") ||
+          text.contains("completion") ||
+          text.contains("university")) {
         category = "Academic";
+      }
+      else if (text.contains("bill") ||
+          text.contains("invoice")) {
+        category = "Bills";
+      }
+      else if (text.contains("ticket") ||
+          text.contains("booking")) {
+        category = "Tickets";
+      }
+      else if (path.endsWith(".jpg") || path.endsWith(".png")) {
+        category = "Images";
       }
       Navigator.pop(context, {
         "name": name,
         "path": path,
         "category": category,
       });
+    } else {
+      print("No image captured");
     }
   }
 
@@ -68,10 +84,7 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
       String lowerName = name.toLowerCase();
 
       String category = "Others";
-      String text = extractedText.toLowerCase();
 
-
-// 💰 Payments (strong detection)
       if (text.contains("upi") ||
           text.contains("paid") ||
           text.contains("payment") ||
@@ -80,23 +93,17 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
           text.contains("rs")) {
         category = "Payments";
       }
-
-// 🧾 Bills
       else if (text.contains("invoice") ||
           text.contains("bill") ||
           text.contains("total")) {
         category = "Bills";
       }
-
-// 🎓 Academic
       else if (text.contains("certificate") ||
           text.contains("marks") ||
           text.contains("result") ||
           text.contains("university")) {
         category = "Academic";
       }
-
-// 🎟️ Tickets
       else if (text.contains("ticket") ||
           text.contains("boarding") ||
           text.contains("booking")) {

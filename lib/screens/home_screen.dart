@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
         title: const Text(
           "Evidence Locker",
           style: TextStyle(
@@ -46,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
             fontSize: 22,
           ),
         ),
-        centerTitle: true,
       ),
 
       body: Padding(
@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
 
             const SizedBox(height: 20),
-
 
             const Text(
               "Welcome back, Tanya 👋",
@@ -97,7 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             const SizedBox(height: 20),
-
             Expanded(
               child: searchQuery.isNotEmpty
                   ? ListView.builder(
@@ -109,7 +107,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   final category = doc["category"]!.toLowerCase();
                   final query = searchQuery.toLowerCase();
 
-                  if (!(name.contains(query) || category.contains(query))) {
+                  if (!(name.contains(query) ||
+                      category.contains(query))) {
                     return const SizedBox();
                   }
 
@@ -117,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: Text(doc["name"]!),
                     subtitle: Text(doc["category"]!),
                   );
-                }, // ✅ THIS COMMA IS IMPORTANT
+                },
               )
                   : GridView.count(
                 crossAxisCount: 2,
@@ -138,7 +137,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF6F4E37),
         onPressed: () async {
@@ -152,25 +150,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
           if (result != null) {
             final box = Hive.box('documentsBox');
-
-            setState(() {
-              documents.add(result);
-              box.add(result);
-            });
+            box.add(result);
           }
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
-
   Widget buildFolderCard(String title, IconData icon, Color color) {
     return GestureDetector(
       onTap: () {
-        final filtered = documents.where((doc) {
-          return doc["category"] == title;
-        }).toList();
-
         Navigator.push(
           context,
           MaterialPageRoute(
