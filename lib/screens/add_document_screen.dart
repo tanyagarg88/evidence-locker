@@ -77,38 +77,69 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
     if (result != null) {
       String name = result.files.single.name;
       String path = result.files.single.path!;
+
       String extractedText = await extractText(path);
       print("Extracted Text: $extractedText");
 
       String text = extractedText.toLowerCase();
       String lowerName = name.toLowerCase();
+      String combined = text + lowerName;
 
       String category = "Others";
 
-      if (text.contains("upi") ||
-          text.contains("paid") ||
-          text.contains("payment") ||
-          text.contains("amount") ||
-          text.contains("₹") ||
-          text.contains("rs")) {
+// 📸 Screenshots (FIRST PRIORITY)
+      if (combined.contains("screenshot")) {
+        category = "Screenshots";
+      }
+
+// 💰 Payments
+      else if (combined.contains("upi") ||
+          combined.contains("paid") ||
+          combined.contains("payment") ||
+          combined.contains("₹") ||
+          combined.contains("rs") ||
+          combined.contains("amount")) {
         category = "Payments";
       }
-      else if (text.contains("invoice") ||
-          text.contains("bill") ||
-          text.contains("total")) {
+
+// 🧾 Bills
+      else if (combined.contains("invoice") ||
+          combined.contains("bill") ||
+          combined.contains("total")) {
         category = "Bills";
       }
-      else if (text.contains("certificate") ||
-          text.contains("marks") ||
-          text.contains("result") ||
-          text.contains("university")) {
+
+// 🎓 Academic (IMPROVED)
+      else if (combined.contains("certificate") ||
+          combined.contains("course") ||
+          combined.contains("completion") ||
+          combined.contains("university") ||
+          combined.contains("marks") ||
+          combined.contains("result") ||
+          combined.contains("student")) {
         category = "Academic";
       }
-      else if (text.contains("ticket") ||
-          text.contains("boarding") ||
-          text.contains("booking")) {
+
+// 🎟️ Tickets
+      else if (combined.contains("ticket") ||
+          combined.contains("booking") ||
+          combined.contains("boarding")) {
         category = "Tickets";
       }
+
+// 🖼️ Images
+      else if (lowerName.endsWith(".jpg") ||
+          lowerName.endsWith(".png")) {
+        category = "Images";
+      }
+      Navigator.pop(context, {
+        "name": name,
+        "path": path,
+        "category": category,
+      });
+
+    } else {
+      print("No file selected");
     }
   }
 
