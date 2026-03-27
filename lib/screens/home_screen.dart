@@ -23,11 +23,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void loadDocuments() {
     final box = Hive.box('documentsBox');
 
+    final data = box.values
+        .map((e) => Map<String, String>.from(e))
+        .toList();
+
     setState(() {
-      documents = box.values
-          .map((e) => Map<String, String>.from(e))
-          .toList();
+      documents = data;
     });
+
+    print("DOCUMENTS LOADED: $documents");
   }
 
   @override
@@ -146,11 +150,13 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context) => const AddDocumentScreen(),
             ),
           );
-          loadDocuments();
-
+          print("RESULT RECEIVED: $result");
           if (result != null) {
             final box = Hive.box('documentsBox');
-            box.add(result);
+            await box.add(result);
+            loadDocuments();
+          } else {
+            print("Result is NULL ❌");
           }
         },
         child: const Icon(Icons.add, color: Colors.white),
