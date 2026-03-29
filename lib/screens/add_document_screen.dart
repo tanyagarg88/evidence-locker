@@ -14,15 +14,16 @@ class AddDocumentScreen extends StatefulWidget {
 class _AddDocumentScreenState extends State<AddDocumentScreen> {
   Future<void> scanDocument() async {
     final ImagePicker picker = ImagePicker();
-
-    final XFile? image =
-    await picker.pickImage(source: ImageSource.camera);
+    final image = await picker.pickImage(source: ImageSource.camera);
 
     if (image != null) {
       String path = image.path;
       String name = path.split('/').last;
+
       String extractedText = await extractText(path);
       print("OCR TEXT: $extractedText");
+      print("IMAGE CAPTURED: $name");
+
 
       String text = extractedText.toLowerCase();
       String category = "Others";
@@ -72,74 +73,70 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
   }
 
   Future<void> pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
 
-    if (result != null) {
-      String name = result.files.single.name;
-      String path = result.files.single.path!;
+      if (result != null && result.files.single.path != null) {
+        String name = result.files.single.name;
+        String path = result.files.single.path!;
+        String lowerName = name.toLowerCase();
 
-      String extractedText = await extractText(path);
-      print("Extracted Text: $extractedText");
+        print("FILE PICKED: $name");
 
-      String text = extractedText.toLowerCase();
-      String lowerName = name.toLowerCase();
-      String combined = text + lowerName;
+        String category = "Others";
+        String text = "";
 
-      String category = "Others";
+        if (lowerName.endsWith(".jpg") || lowerName.endsWith(".png")) {
+          text = await extractText(path);
+        }
 
-// 📸 Screenshots (FIRST PRIORITY)
-      if (combined.contains("screenshot")) {
-        category = "Screenshots";
+        String combined = text.toLowerCase() + lowerName;
+
+        if (combined.contains("screenshot")) {
+          category = "Screenshots";
+        }
+        else if (combined.contains("upi") ||
+            combined.contains("paid") ||
+            combined.contains("payment") ||
+            combined.contains("₹") ||
+            combined.contains("rs") ||
+            combined.contains("amount")) {
+          category = "Payments";
+        }
+        else if (combined.contains("invoice") ||
+            combined.contains("bill") ||
+            combined.contains("total")) {
+          category = "Bills";
+        }
+        else if (combined.contains("certificate") ||
+            combined.contains("course") ||
+            combined.contains("completion") ||
+            combined.contains("university") ||
+            combined.contains("marks") ||
+            combined.contains("result") ||
+            combined.contains("student")) {
+          category = "Academic";
+        }
+        else if (combined.contains("ticket") ||
+            combined.contains("booking") ||
+            combined.contains("boarding")) {
+          category = "Tickets";
+        }
+        else if (lowerName.endsWith(".jpg") ||
+            lowerName.endsWith(".png")) {
+          category = "Images";
+        }
+        Navigator.pop(context, {
+          "name": name,
+          "path": path,
+          "category": category,
+        });
+
+      } else {
+        print("No file selected");
       }
-
-// 💰 Payments
-      else if (combined.contains("upi") ||
-          combined.contains("paid") ||
-          combined.contains("payment") ||
-          combined.contains("₹") ||
-          combined.contains("rs") ||
-          combined.contains("amount")) {
-        category = "Payments";
-      }
-
-// 🧾 Bills
-      else if (combined.contains("invoice") ||
-          combined.contains("bill") ||
-          combined.contains("total")) {
-        category = "Bills";
-      }
-
-// 🎓 Academic (IMPROVED)
-      else if (combined.contains("certificate") ||
-          combined.contains("course") ||
-          combined.contains("completion") ||
-          combined.contains("university") ||
-          combined.contains("marks") ||
-          combined.contains("result") ||
-          combined.contains("student")) {
-        category = "Academic";
-      }
-
-// 🎟️ Tickets
-      else if (combined.contains("ticket") ||
-          combined.contains("booking") ||
-          combined.contains("boarding")) {
-        category = "Tickets";
-      }
-
-// 🖼️ Images
-      else if (lowerName.endsWith(".jpg") ||
-          lowerName.endsWith(".png")) {
-        category = "Images";
-      }
-      Navigator.pop(context, {
-        "name": name,
-        "path": path,
-        "category": category,
-      });
-
-    } else {
-      print("No file selected");
+    } catch (e) {
+      print("ERROR in pickFile: $e");
     }
   }
 
@@ -247,8 +244,6 @@ class _AddDocumentScreenState extends State<AddDocumentScreen> {
             ),
 
             const SizedBox(height: 30),
-
-            // OR TEXT
             const Text(
               "OR",
               style: TextStyle(

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:open_file/open_file.dart';
 import 'image_preview_screen.dart';
+import 'pdf_view_screen.dart';
 
-class
-FolderScreen extends StatefulWidget {
+class FolderScreen extends StatefulWidget {
   final String title;
 
   const FolderScreen({
@@ -17,7 +17,6 @@ FolderScreen extends StatefulWidget {
 }
 
 class _FolderScreenState extends State<FolderScreen> {
-
   List<Map<String, String>> documents = [];
 
   @override
@@ -72,11 +71,12 @@ class _FolderScreenState extends State<FolderScreen> {
           )
         ],
       ),
+
       body: documents.isEmpty
           ? const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Icon(Icons.folder_open, size: 60, color: Colors.brown),
             SizedBox(height: 10),
             Text(
@@ -103,8 +103,6 @@ class _FolderScreenState extends State<FolderScreen> {
             ),
 
             onDismissed: (direction) {
-              final box = Hive.box('documentsBox');
-
               final allItems = box.values.toList();
 
               for (int i = 0; i < allItems.length; i++) {
@@ -123,88 +121,105 @@ class _FolderScreenState extends State<FolderScreen> {
                 const SnackBar(content: Text("Deleted successfully")),
               );
             },
+
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                  borderRadius: BorderRadius.circular(20),onTap: () async {
-                String path = doc["path"]!;
+                borderRadius: BorderRadius.circular(20),
+                onTap: () {
+                  String path = doc["path"]!.toLowerCase();
 
-                if (path.endsWith(".jpg") || path.endsWith(".png")) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ImagePreviewScreen(imagePath: path),
-                    ),
-                  );
-                } else {
-                  OpenFile.open(path);
-                }
-              },
+                  if (path.endsWith(".jpg") ||
+                      path.endsWith(".png")) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ImagePreviewScreen(
+                          imagePath: doc["path"]!,
+                        ),
+                      ),
+                    );
+                  } else if (path.endsWith(".pdf")) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            PDFViewScreen(path: doc["path"]!),
+                      ),
+                    );
+                  } else {
+                    OpenFile.open(doc["path"]!);
+                  }
+                },
+
                 child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 10, horizontal: 12),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                  BoxShadow(
-                    color: Colors.brown.withOpacity(0.12),
-                    blurRadius: 15,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.brown.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Icon(
-                      doc["path"]!.endsWith(".pdf")
-                          ? Icons.picture_as_pdf
-                          : Icons.image,
-                      size: 26,
-                      color: doc["path"]!.endsWith(".pdf")
-                          ? Colors.red
-                          : Colors.purple,
-                    ),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.brown.withOpacity(0.12),
+                        blurRadius: 15,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          doc["name"]!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            height: 1.3,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.brown.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          doc["category"]!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
+                        child: Icon(
+                          doc["path"]!.endsWith(".pdf")
+                              ? Icons.picture_as_pdf
+                              : Icons.image,
+                          size: 26,
+                          color: doc["path"]!.endsWith(".pdf")
+                              ? Colors.red
+                              : Colors.purple,
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
 
-                  const SizedBox(width: 8),
-                  const Icon(Icons.more_vert, color: Colors.grey),
-                ],
-              ),
-            ),
+                      const SizedBox(width: 14),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              doc["name"]!,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              doc["category"]!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+                      const Icon(Icons.more_vert,
+                          color: Colors.grey),
+                    ],
+                  ),
+                ),
               ),
             ),
           );

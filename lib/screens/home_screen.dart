@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       documents = data;
     });
 
-    print("DOCUMENTS LOADED: $documents");
+    print("DOCUMENTS: $documents");
   }
 
   @override
@@ -142,30 +142,22 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF6F4E37),
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AddDocumentScreen(),
-              ),
-            );
-
-            print("RESULT: $result");
-
-            if (result != null) {
-              final box = Hive.box('documentsBox');
-
-              await box.add(result);
-
-              print("SAVED TO HIVE");
-
-              loadDocuments();
-            } else {
-              print("RESULT IS NULL ❌");
-            }
-          },
-        child: const Icon(Icons.add, color: Colors.white),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddDocumentScreen(),
+            ),
+          );
+          print("RESULT RECEIVED: $result");
+          if (result != null) {
+            final box = Hive.box('documentsBox');
+            await box.add(result);
+            print("SAVED TO HIVE");
+            loadDocuments();
+          }
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
