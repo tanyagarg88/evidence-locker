@@ -18,7 +18,7 @@ class EvidenceLockerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Evidence Locker',
+      title: 'DocuVault AI',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFF5EDE4),
         primaryColor: const Color(0xFF2E2E2E),
