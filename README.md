@@ -1,20 +1,40 @@
 
-# evidence_locker
+# 📂 DocuVault AI (Evidence Locker)
 
-Smart Digital Evidence Locker
+A secure Flutter application for storing, organizing, and managing digital documents using AI-powered OCR.
 
-## Getting Started
+## ✨ Features
 
-This project is a starting point for a Flutter application.
+- 📄 Scan documents using the camera
+- 🔍 Extract text with Google ML Kit OCR
+- 📁 Smart document categorization
+- 🔐 Firebase Authentication
+- 💾 Offline storage using Hive
+- 🖼️ Image & PDF preview
+- 🔎 Search documents instantly
+- 📱 Responsive and clean UI
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠️ Tech Stack
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Flutter
+- Dart
+- Firebase Authentication
+- Google ML Kit OCR
+- Hive Database
+- REST APIs
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# evidence-locker
+## 🚀 Getting Started
+
+```bash
+git clone https://github.com/tanyagarg88/evidence-locker.git
+cd evidence-locker
+flutter pub get
+flutter run
+```
+
+## 👩‍💻 Developed By
+
+**Tanya Garg**
+
+B.Tech CSE | Flutter & Android Developer
 
