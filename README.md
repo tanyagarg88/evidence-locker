@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # evidence_locker
 
 Smart Digital Evidence Locker
@@ -17,4 +17,4 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 =======
 # evidence-locker
->>>>>>> 1bf0cae48b8f7f8710d09f8921b5240d22038e0a
+
